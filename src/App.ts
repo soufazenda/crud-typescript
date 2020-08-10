@@ -1,7 +1,7 @@
+import './bootstrap';
 import express from 'express'
 import cors from 'cors'
 import mongoose from 'mongoose'
-
 import routes from './routes'
 
 class App {
@@ -20,7 +20,7 @@ class App {
     }
 
     private database (): void {
-        mongoose.connect('mongodb+srv://mateussilva:75998572@msdb-q1ram.gcp.mongodb.net/test', {
+        mongoose.connect(process.env.MONGO_URL, {
             useNewUrlParser: true
         })
     }
