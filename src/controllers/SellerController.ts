@@ -1,13 +1,14 @@
 import {Request, Response} from 'express'
 import bcrypt from 'bcrypt';
-import User from '../schemas/User'
+import Seller from '../schemas/Seller';
+import slugify from 'slugify'
 
-class UserController {
+class SellerController {
     public async index(req: Request, res: Response): Promise<Response> {
-        const users = await User.find()
+        const seller = await Seller.find()
 
-        return res.json(users)
-    } 
+        return res.json(seller)
+    }
 
     public async create(req: Request, res: Response): Promise<Response> {
         // Verifica se os campos obrigatórios foram enviados
@@ -16,7 +17,7 @@ class UserController {
         }
 
         // Verifica se o email já existe na base de dados
-        const exists = User.findOne({email: req.body.email});
+        const exists = await Seller.findOne({email: req.body.email});
 
         if (exists) {
             return res.json({error: true, message: "Email já cadastrado"})
@@ -26,21 +27,21 @@ class UserController {
 
         delete req.body.password;
 
-        Object.assign(req.body, {password: hashPassword});
+        Object.assign(req.body, {password: hashPassword, slug: slugify(`${req.body.companyNam}`).toLowerCase()});
 
-        // Cria o novo usuário        
-        const user = await User.create(req.body)
+        // Cria o novo vendedor
+        const user = await Seller.create(req.body)
 
         return res.json(user)
-    }
+    };
 
     public async read(req: Request, res: Response): Promise<Response> {
-        const user = User.findOne({email: req.body.email});
-        if (!user) {
-            return res.json({error: true, message: "Usuário não encontrado"})
+        const seller = await Seller.findOne({slug: req.body.seller});
+        if (!seller) {
+            return res.json({error: true, message: "Vendedor não encontrado"})
         }
 
-        return res.json(user)
+        return res.json(seller)
     }
 
     public async update(req: Request, res: Response): Promise<Response> {
@@ -49,23 +50,23 @@ class UserController {
             return res.json({error: true, message: "Usuário não encontrado"})
         }
 
-        const user = req.body;
-        delete user._id
+        const seller = req.body;
+        delete seller._id
 
-        const updatedData = await User.findOneAndUpdate(req.body._id, user)
+        const updatedData = await Seller.findOneAndUpdate(req.body._id, seller)
 
         return res.json({error: false, message: "Usuário editado com sucesso!"})
     }
 
     public async delete(req: Request, res: Response): Promise<Response> {
         // Deve receber um _id
-        const user = await User.findOneAndDelete(req.body._id)
+        const seller = await Seller.findOneAndDelete(req.body._id)
 
-        console.log(user);
+        console.log(seller);
 
-        return res.json(user)
+        return res.json(seller)
     }
 
 }
 
-export default new UserController()
+export default new SellerController()

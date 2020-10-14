@@ -1,6 +1,6 @@
 import { Schema, model, Document } from 'mongoose';
 
-interface UserInterface extends Document {
+interface SellerInterface extends Document {
     email: string
     firstName: string
     lastName: string
@@ -11,12 +11,12 @@ interface UserInterface extends Document {
     phone?: string
 }
 
-const UserSchema = new Schema({
+const SellerSchema = new Schema({
     cpfCnpj: String,
     email: String,
     firstName: String,
     lastName: String,
-    password: String, // TODO: Criptografar a senha
+    password: String,
     companyName: String,
     slug: String,
     phone: String
@@ -28,4 +28,4 @@ const UserSchema = new Schema({
 //     return this.firstName + ' ' + this.lastName
 // }
 
-export default model<UserInterface>('User', UserSchema)
+export default model<SellerInterface>('Seller', SellerSchema)

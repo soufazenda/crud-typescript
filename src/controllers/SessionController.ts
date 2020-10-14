@@ -1,6 +1,6 @@
 import {Request, Response} from 'express'
 import bcrypt from 'bcrypt';
-import User from '../schemas/User'
+import User from '../schemas/Seller'
 const jwt = require("jsonwebtoken");
 
 class SessionController {
@@ -20,12 +20,6 @@ class SessionController {
         const access_token = await jwt.sign({ id: user._id }, process.env.APP_SECRET);
 
         return res.status(200).json({access_token: access_token, issued_at: new Date()})
-    }
-
-    public async logout(req: Request, res: Response): Promise<Response> {
-        const users = await User.find()
-
-        return res.json(users)
     }
 }
 
