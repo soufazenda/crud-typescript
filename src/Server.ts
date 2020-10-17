@@ -1,3 +1,4 @@
 import app from './App'
+import {port} from './utils/config'
 
-app.listen(3333)
+app.listen(port)

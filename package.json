@@ -5,6 +5,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "nodemon src/Server.ts",
+    "server": "tsnd --respawn --transpile-only --no-notify src/Server.ts",
     "build": "sucrase ./src -d ./dist --transforms typescript,imports"
   },
   "devDependencies": {
@@ -24,15 +25,18 @@
     "nodemon": "^2.0.4",
     "prettier": "^2.0.5",
     "sucrase": "^3.15.0",
+    "ts-node-dev": "^1.0.0",
     "typescript": "^3.9.7"
   },
   "dependencies": {
+    "await-to-js": "^2.1.1",
     "bcrypt": "^5.0.0",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.9.27",
+    "morgan": "^1.10.0",
     "slugify": "^1.4.5"
   }
 }

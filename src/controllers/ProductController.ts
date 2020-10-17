@@ -1,59 +1,87 @@
-import {Request, Response} from 'express'
+import { Request, Response } from 'express'
 import Product from '../schemas/Product'
-import { isValidObjectId } from 'mongoose';
-const ObjectId = require('mongoose').Types.ObjectId;
+import { isValidObjectId } from 'mongoose'
+import to from 'await-to-js'
+const ObjectId = require('mongoose').Types.ObjectId
 
 class ProductController {
-    public async list(req: Request, res: Response): Promise<Response> {
-        const products = await Product.find({seller: req.body.seller});
+  public async list(req: Request, res: Response) {
+    const { seller } = req.body
 
-        return res.json(products);
+    const [err, products] = await to(Product.find({ seller }).exec())
+
+    if (err) res.statusInternalServerError('Não foi possível buscar Produtos')
+
+    return res.statusOk('Produtos Encontrados com sucesso!', products)
+  }
+
+  public async index(req: Request, res: Response) {
+    const products = await Product.find()
+
+    return res.statusOk('Produtos encontrados com sucesso!', products)
+  }
+
+  public async create(req: Request, res: Response) {
+    const { title, description, location, galery } = req.body
+    // Verifica se os campos obrigatórios foram enviados
+    if (!title || !description || !location || !galery) {
+      return res.statusUnprocessableEntity('Campos incompletos')
     }
 
-    public async index(req: Request, res: Response): Promise<Response> {
-        const products = await Product.find();
+    const [createError, product] = await to(
+      Product.create(title, description, location, galery)
+    )
 
-        return res.json(products);
+    if (createError || !product)
+      return res.statusInternalServerError('Erro ao criar produto')
+
+    return res.statusCreated('produto cadastrado com sucesso', product)
+  }
+
+  public async read(req: Request, res: Response) {
+    const { productId } = req.body
+    const [findError, product] = await to(Product.findById(productId).exec())
+    if (findError)
+      return res.statusInternalServerError('Erro ao procurar produto!')
+    if (findError || !product) {
+      return res.statusNotFound('Produto não encontrado!')
     }
 
-    public async create(req: Request, res: Response): Promise<Response> {
-        // Verifica se os campos obrigatórios foram enviados
-        if(!req.body.title || !req.body.description || !req.body.location || !req.body.galery) {
-            return res.json({error: true, message: "Campos incompletos"})
-        }
+    return res.statusOk('Produto encontrado com sucesso!', product)
+  }
 
-        await Product.create(req.body)
-
-        return res.json({error: false, message: "produto cadastrado com sucesso"})
+  public async update(req: Request, res: Response) {
+    const { productId, title, description, location, galery } = req.body
+    if (productId) {
+      return res.statusUnprocessableEntity('Produto não encontrado', {
+        productId: 'Nenhum produto especificado!',
+      })
     }
 
-    public async read(req: Request, res: Response): Promise<Response> {
-        const product = await Product.findOne({_id: req.body.id});
-        if (!product) {
-            return res.status(404).json({error: true, message: "Produto não encontrado"});
-        }
+    const product = { title, description, location, galery }
 
-        return res.status(200).json(product)
-    }
+    const [updateError, updatedProduct] = await to(
+      Product.findOneAndUpdate(productId, product).exec()
+    )
 
-    public async update(req: Request, res: Response): Promise<Response> {
-        if (!req.body._id) {
-            return res.json({error: true, message: "Produto não encontrado"})
-        }
+    if (updateError || !updatedProduct)
+      return res.statusInternalServerError(
+        'Não foi possível atualizar o produto'
+      )
 
-        const product = req.body;
-        delete product._id
+    return res.statusOk('Produto editado com sucesso!', updatedProduct)
+  }
 
-        await Product.findOneAndUpdate(req.body._id, product)
+  public async delete(req: Request, res: Response) {
+    const { productId } = req.body
 
-        return res.json({error: false, message: "Produto editado com sucesso!"})
-    }
+    const [findError, product] = await to(Product.findById(productId).exec())
+    if (findError || !product?.$isDeleted)
+      res.statusInternalServerError('Erro ao procurar produto!')
+    if (!product) res.statusNotFound('Produto não encontrado!')
 
-    public async delete(req: Request, res: Response): Promise<Response> {
-        const product = await Product.findOneAndDelete(req.body._id)
-
-        return res.json({error: false, message: "Produto excluído com sucesso!"})
-    }
+    return res.statusOk('Produto deletado com sucesso!')
+  }
 }
 
 export default new ProductController()
