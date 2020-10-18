@@ -1,26 +1,36 @@
-import {Request, Response} from 'express'
-import bcrypt from 'bcrypt';
-import User from '../schemas/Seller'
-const jwt = require("jsonwebtoken");
+import { Request, Response } from "express"
+import bcrypt from "bcrypt"
+import User from "../schemas/User"
+import to from "await-to-js"
 
 class SessionController {
-    public async login(req: Request, res: Response): Promise<Response> {
-        const user = await User.findOne({email: req.body.email})
+  public async login(req: Request, res: Response) {
+    const { email, password } = req.body
 
-        if (!user) {
-            return res.status(401).json({error: true, message: "Esse email ainda não está cadastrado"})
-        }
+    const [findUserError, user] = await to(User.findOne({ email }).exec())
 
-        const authorized = await bcrypt.compare(req.body.password, user.password);
+    if (findUserError)
+      return res.statusInternalServerError(
+        "Não foi possível buscar o usuário. Tente novamente mais tarde."
+      )
 
-        if (!authorized) {
-            return res.status(401).json({error: true, message: "Senha incorreta"});
-        }
-
-        const access_token = await jwt.sign({ id: user._id }, process.env.APP_SECRET);
-
-        return res.status(200).json({access_token: access_token, issued_at: new Date()})
+    if (!user) {
+      return res.statusUnauthorized("Email ou senha inválidos!")
     }
+
+    const authorized = await user.authenticate(password)
+
+    if (!authorized) {
+      return res.statusUnauthorized("Email ou senha inválidos!")
+    }
+
+    const accessToken = user.createToken()
+
+    return res.statusOk("Logado com sucesso!", {
+      accessToken,
+      issuedAt: new Date(),
+    })
+  }
 }
 
 export default new SessionController()
