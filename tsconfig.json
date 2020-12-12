@@ -3,17 +3,27 @@
     "target": "es6",
     "module": "commonjs",
     "outDir": "./build",
-    "rootDir": "./",
+    "rootDir": "./src",
     "strict": true,
     "noImplicitAny": false,
     "esModuleInterop": true,
+    "resolveJsonModule": true,
     "allowJs": true,
     "declaration": false,
     "allowSyntheticDefaultImports": true,
     "skipLibCheck": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
     "typeRoots": [
       "types",
       "./node_modules/@types"
     ],
+    "baseUrl": ".",
+    "paths": {
+      "~/*": ["src/*"],
+      "@models/*": ["src/models/*"],
+      "@controllers/*": ["src/controllers/*"],
+      "@utils/*": ["src/utils/*"]
+    }
    }
 }
