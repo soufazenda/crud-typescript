@@ -1,8 +1,7 @@
-import { Request, Response } from "express"
-import bcrypt from "bcrypt"
-import User from "../schemas/User"
-import slugify from "slugify"
-import to from "await-to-js"
+import { Request, Response } from 'express'
+import bcrypt from 'bcrypt'
+import User from '../models/User'
+import to from 'await-to-js'
 
 class UserController {
   public async index(req: Request, res: Response) {
@@ -15,14 +14,14 @@ class UserController {
     const { email, firstName, lastName, password } = req.body
 
     if (!email || !firstName || !lastName || !password) {
-      return res.statusUnprocessableEntity("Campos incompletos")
+      return res.statusUnprocessableEntity('Campos incompletos')
     }
 
     // Verifica se o email já existe na base de dados
     const exists = await User.findOne({ email: req.body.email })
 
     if (exists) {
-      return res.statusUnprocessableEntity("Email já cadastrado")
+      return res.statusUnprocessableEntity('Email já cadastrado')
     }
 
     const hashPassword = await bcrypt.hash(req.body.password, 8)
@@ -31,7 +30,6 @@ class UserController {
 
     Object.assign(req.body, {
       password: hashPassword,
-      slug: slugify(`${req.body.companyNam}`).toLowerCase(),
     })
 
     // Cria o novo vendedor
@@ -43,7 +41,7 @@ class UserController {
   public async read(req: Request, res: Response) {
     const seller = await User.findOne({ slug: req.body.seller })
     if (!seller) {
-      return res.statusNotFound("Vendedor não encontrado")
+      return res.statusNotFound('Vendedor não encontrado')
     }
 
     return res.json(seller)
@@ -52,7 +50,7 @@ class UserController {
   public async update(req: Request, res: Response) {
     // Deve receber um objeto com o _id e as novas informações
     if (!req.body._id) {
-      return res.statusNotFound("Usuário não encontrado")
+      return res.statusNotFound('Usuário não encontrado')
     }
 
     const seller = req.body
@@ -60,7 +58,7 @@ class UserController {
 
     const updatedData = await User.findOneAndUpdate(req.body._id, seller)
 
-    return res.statusOk("Usuário editado com sucesso!")
+    return res.statusOk('Usuário editado com sucesso!')
   }
 
   public async delete(req: Request, res: Response) {
@@ -68,10 +66,10 @@ class UserController {
 
     const [findError, user] = await to(User.findById(sellerId).exec())
     if (findError || !user?.$isDeleted)
-      res.statusInternalServerError("Erro ao procurar Usuário!")
-    if (!user) res.statusNotFound("Usuário não encontrado!")
+      res.statusInternalServerError('Erro ao procurar Usuário!')
+    if (!user) res.statusNotFound('Usuário não encontrado!')
 
-    return res.statusOk("Usuário deletado com sucesso!")
+    return res.statusOk('Usuário deletado com sucesso!')
   }
 }
 

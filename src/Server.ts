@@ -1,4 +1,4 @@
 import app from './App'
-import {port} from './utils/config'
+import { port } from './configuration/config'
 
 app.listen(port)
