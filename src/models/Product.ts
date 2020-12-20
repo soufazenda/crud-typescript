@@ -6,13 +6,14 @@ import {
   ManyToOne,
   CreateDateColumn,
   UpdateDateColumn,
+  BaseEntity,
 } from 'typeorm'
 
 import { SOUTH_AMERICA_CURRENCY } from '../utils/commonData'
-import { User } from './User'
+import User from './User'
 
 @Entity('products')
-export class Product {
+export default class Product extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id!: string
 

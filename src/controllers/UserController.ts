@@ -1,8 +1,11 @@
-import { Request, Response } from 'express'
 import bcrypt from 'bcrypt'
-import User from '../models/User'
 import to from 'await-to-js'
-
+import User from '../models/User'
+import validate from '../utils/validate'
+import { Request, Response } from 'express'
+import { emailSecret } from '../configuration/env'
+import { Mailer } from '../mailer'
+import jwt from 'jsonwebtoken'
 class UserController {
   public async index(req: Request, res: Response) {
     const sellers = await User.find()
@@ -11,17 +14,44 @@ class UserController {
   }
 
   public async create(req: Request, res: Response) {
-    const { email, firstName, lastName, password } = req.body
-
-    if (!email || !firstName || !lastName || !password) {
-      return res.statusUnprocessableEntity('Campos incompletos')
+    const {
+      email,
+      firstName,
+      lastName,
+      password,
+      birthdate: rawBirthdate,
+      phone,
+      cpfCnpj,
+    }: User = req.body
+    const birthdate = new Date(rawBirthdate)
+    const invalidFields = validate({
+      email,
+      firstName,
+      lastName,
+      password,
+      birthdate,
+    })
+    if (invalidFields != null) {
+      return res.statusUnprocessableEntity('Campos Inválidos!', invalidFields)
     }
 
     // Verifica se o email já existe na base de dados
-    const exists = await User.findOne({ email: req.body.email })
+    const foundUser = await User.findOne({ where: [{ cpfCnpj }, { email }] })
 
-    if (exists) {
-      return res.statusUnprocessableEntity('Email já cadastrado')
+    if (foundUser) {
+      if (foundUser.email === email)
+        return res.statusUnprocessableEntity(
+          'Email já cadastrado no sistema!',
+          { fields: [{ field: 'email', message: 'Email já cadastrado' }] }
+        )
+
+      if (foundUser.cpfCnpj === cpfCnpj)
+        return res.statusUnprocessableEntity(
+          'CPF ou CNPJ já cadastrado no sistema',
+          { fields: [{ field: 'cpfCnpj', message: 'CPF/CNPJ já cadastrado' }] }
+        )
+
+      return res.statusUnprocessableEntity('Usuário já cadastrado')
     }
 
     const hashPassword = await bcrypt.hash(req.body.password, 8)
@@ -32,19 +62,63 @@ class UserController {
       password: hashPassword,
     })
 
-    // Cria o novo vendedor
-    const user = await User.create(req.body)
+    const token = jwt.sign({}, emailSecret, { expiresIn: '3 days' })
+    const [error, user] = await to(
+      User.insert({
+        ...req.body,
+        firstName: firstName.trim().toLowerCase(),
+        lastName: lastName.trim().toLowerCase(),
+        confirmEmailToken: token,
+      })
+    )
+    if (error || !user) {
+      console.error(error)
+      return res.statusInternalServerError('Não foi possível criar usuário!')
+    }
 
-    return res.json(user)
+    const mailer = new Mailer()
+
+    mailer.sendEmailConfirmation({ to: email, token, username: firstName })
+    console.log(user)
+    return res.statusCreated('Usúario criado com sucesso!', user.identifiers[0])
   }
 
   public async read(req: Request, res: Response) {
-    const seller = await User.findOne({ slug: req.body.seller })
+    const seller = await User.findOne({})
     if (!seller) {
       return res.statusNotFound('Vendedor não encontrado')
     }
 
     return res.json(seller)
+  }
+
+  public async confirmEmail(req: Request, res: Response) {
+    const token = String(req.query.token)
+
+    const [error, user] = await to(
+      User.findOneOrFail({ where: { confirmEmailToken: token } })
+    )
+
+    if (error) return res.statusBadRequest('Não foi possível buscar token.')
+    if (!user) return res.statusBadRequest('Token não encontrada.')
+
+    const tokenProps = jwt.verify(token, emailSecret)
+    if (typeof tokenProps === 'string')
+      return res.statusBadRequest('Não foi possível validar token.')
+
+    console.log(Date.now(), (tokenProps as any).exp * 1000)
+    if (Date.now() >= (tokenProps as any).exp * 1000) {
+      return res.statusUnauthorized('Token Expirada!')
+    }
+    user.confirmedEmail = true
+    user.confirmEmailToken = ''
+
+    const [saveError] = await to(user.save())
+
+    if (saveError)
+      return res.statusInternalServerError('Não foi possível confirmar e-mail!')
+
+    return res.statusOk('E-mail confirmado com sucesso!')
   }
 
   public async update(req: Request, res: Response) {
@@ -56,7 +130,7 @@ class UserController {
     const seller = req.body
     delete seller._id
 
-    const updatedData = await User.findOneAndUpdate(req.body._id, seller)
+    const updatedData = await User.find({ id: req.body._id })
 
     return res.statusOk('Usuário editado com sucesso!')
   }
@@ -64,9 +138,8 @@ class UserController {
   public async delete(req: Request, res: Response) {
     const { sellerId } = req.body
 
-    const [findError, user] = await to(User.findById(sellerId).exec())
-    if (findError || !user?.$isDeleted)
-      res.statusInternalServerError('Erro ao procurar Usuário!')
+    const [findError, user] = await to(User.findOne({ id: sellerId }))
+    if (findError) res.statusInternalServerError('Erro ao procurar Usuário!')
     if (!user) res.statusNotFound('Usuário não encontrado!')
 
     return res.statusOk('Usuário deletado com sucesso!')

@@ -9,9 +9,9 @@ import {
   JoinColumn,
   BaseEntity,
 } from 'typeorm'
-import { Address } from './Address'
-import { Product } from './Product'
-import { Company } from './Company'
+import Address from './Address'
+import Product from './Product'
+import Company from './Company'
 
 @Entity('users')
 export default class User extends BaseEntity {
@@ -30,6 +30,9 @@ export default class User extends BaseEntity {
   @Column({ name: 'last_name' })
   lastName!: string
 
+  @Column({ nullable: false })
+  birthdate!: Date
+
   @Column({
     name: 'profile_type',
     enum: ['common', 'corporate'],
@@ -39,6 +42,12 @@ export default class User extends BaseEntity {
 
   @Column()
   password!: string
+
+  @Column({ name: 'confirmed_email', default: false })
+  confirmedEmail!: boolean
+
+  @Column({ name: 'confirm_email_token', nullable: true })
+  confirmEmailToken!: string
 
   @Column({ length: 15 })
   phone?: string
@@ -58,4 +67,16 @@ export default class User extends BaseEntity {
 
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt!: Date
+
+  static async new(user: User) {
+    const u = new User()
+    Object.keys(user).map((key) => {
+      if (user[key]) {
+        u[key] = user[key]
+      }
+    })
+
+    const createdUser = await u.save()
+    return createdUser
+  }
 }

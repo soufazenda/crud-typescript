@@ -1,35 +1,35 @@
-import { Request, Response } from "express"
-import bcrypt from "bcrypt"
-import User from "../schemas/User"
-import to from "await-to-js"
+import { Request, Response } from 'express'
+import bcrypt from 'bcrypt'
+import User from '../models/User'
+import to from 'await-to-js'
 
 class SessionController {
   public async login(req: Request, res: Response) {
     const { email, password } = req.body
 
-    const [findUserError, user] = await to(User.findOne({ email }).exec())
+    const [findUserError, user] = await to(User.findOne({ email }))
 
     if (findUserError)
       return res.statusInternalServerError(
-        "Não foi possível buscar o usuário. Tente novamente mais tarde."
+        'Não foi possível buscar o usuário. Tente novamente mais tarde.'
       )
 
     if (!user) {
-      return res.statusUnauthorized("Email ou senha inválidos!")
+      return res.statusUnauthorized('Email ou senha inválidos!')
     }
 
-    const authorized = await user.authenticate(password)
+    // const authorized = await user.authenticate(password)
 
-    if (!authorized) {
-      return res.statusUnauthorized("Email ou senha inválidos!")
-    }
+    // if (!authorized) {
+    //   return res.statusUnauthorized("Email ou senha inválidos!")
+    // }
 
-    const accessToken = user.createToken()
+    // const accessToken = user.createToken()
 
-    return res.statusOk("Logado com sucesso!", {
-      accessToken,
-      issuedAt: new Date(),
-    })
+    // return res.statusOk("Logado com sucesso!", {
+    //   accessToken,
+    //   issuedAt: new Date(),
+    // })
   }
 }
 

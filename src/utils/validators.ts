@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon'
-var passwordStrength = require('password-validator');
+var passwordStrength = require('password-validator')
 
 const EMPTY_MESSAGE = 'Campo Obrigatório'
 const INVALID_MESSAGE = 'Campo inválido'
@@ -28,6 +28,12 @@ class NameValidator extends Validator {
 class AgeValidator extends Validator {
   validate(birthdate?: Date) {
     if (!birthdate) return this.empty
+    if (
+      typeof birthdate !== 'object' ||
+      String(new Date(birthdate)) === 'Invalid Date'
+    )
+      return this.invalid
+    console.log(new Date(birthdate))
     const age = Math.abs(DateTime.fromJSDate(birthdate).diffNow('years').years)
     if (age < 18 || age >= 120) return this.invalid
     return null
@@ -46,19 +52,27 @@ class EmailValidator extends Validator {
 class PasswordValidator extends Validator {
   validate(password?: string) {
     if (!password || !password.trim()) return this.empty
-    
-    const schema = new passwordStrength();
-    schema
-      .is().min(8)
-      .is().max(64)
-      .has().uppercase()
-      .has().lowercase()
-      .has().digits(1)
-      .has().symbols(1)
-      .has().not().spaces();
 
-    if(!schema.validate(password)) return this.invalid
-    
+    const schema = new passwordStrength()
+    schema
+      .is()
+      .min(8)
+      .is()
+      .max(64)
+      .has()
+      .uppercase()
+      .has()
+      .lowercase()
+      .has()
+      .digits(1)
+      .has()
+      .symbols(1)
+      .has()
+      .not()
+      .spaces()
+
+    if (!schema.validate(password)) return this.invalid
+
     return null
   }
 }

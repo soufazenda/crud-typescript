@@ -14,6 +14,12 @@ const routes = Router()
 // Visualizar perfil de uma empresa
 routes.get('/seller', UserController.read)
 
+// Visualizar perfil de uma empresa
+routes.post('/users', UserController.create)
+
+/* /confirmation?token=<emailConfirmToken> */
+routes.get('/confirmation', UserController.confirmEmail)
+
 // Visualizar um produto - DONE
 routes.get('/product', ProductController.read)
 

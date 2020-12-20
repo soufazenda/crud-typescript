@@ -6,11 +6,12 @@ import {
   ManyToOne,
   CreateDateColumn,
   UpdateDateColumn,
+  BaseEntity,
 } from 'typeorm'
-import { User } from './User'
+import User from './User'
 
 @Entity('addresses')
-export class Address {
+export default class Address extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id!: string
 
