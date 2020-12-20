@@ -1,11 +1,13 @@
-import "./bootstrap"
-import express from "express"
-import cors from "cors"
-import mongoose from "mongoose"
-import morgan from "morgan"
-import routes from "./routes"
-import { connectionString, dbName } from "./utils/config"
-import easyResponse from "./utils/simpleResponse"
+import './bootstrap'
+import express from 'express'
+import cors from 'cors'
+import morgan from 'morgan'
+import routes from './routes'
+import { connectionString, dbName } from './configuration/env'
+import easyResponse from './utils/simpleResponse'
+import './database/index'
+import 'reflect-metadata'
+import { Mailer } from './mailer'
 
 class App {
   public express: express.Application
@@ -13,8 +15,13 @@ class App {
   public constructor() {
     this.express = express()
     this.middlewares()
-    this.database()
     this.routes()
+    const mailer = new Mailer()
+    // mailer.sendEmailConfirmation({
+    //   to: 'gustavofelipe68@gmail.com',
+    //   token: 'sdasdasadasdas',
+    //   username: 'Gustavo Santana',
+    // })
   }
 
   private middlewares(): void {
@@ -22,21 +29,8 @@ class App {
     this.express.use(easyResponse)
     this.express.use(cors())
     this.express.use(
-      morgan(":method :url :status :res[content-length] - :response-time ms")
+      morgan(':method :url :status :res[content-length] - :response-time ms')
     )
-  }
-
-  private database(): void {
-    console.log("Connecting to:", dbName, "database...")
-    mongoose
-      .connect(connectionString, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-      })
-      .then(() => console.log("Successfully Connected!"))
-      .catch((err) =>
-        console.error("Error while trying to connect to database!", err)
-      )
   }
 
   private routes(): void {

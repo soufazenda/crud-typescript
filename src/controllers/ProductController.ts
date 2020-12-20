@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import Product from '../schemas/Product'
+import Product from '../models/Product'
 import { isValidObjectId } from 'mongoose'
 import to from 'await-to-js'
 const ObjectId = require('mongoose').Types.ObjectId
