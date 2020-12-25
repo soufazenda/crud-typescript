@@ -2,6 +2,7 @@ import { Request, Response } from 'express'
 import bcrypt from 'bcrypt'
 import User from '../models/User'
 import to from 'await-to-js'
+import { tokenDuration } from '@configuration/env'
 
 class SessionController {
   public async login(req: Request, res: Response) {
@@ -18,18 +19,23 @@ class SessionController {
       return res.statusUnauthorized('Email ou senha inválidos!')
     }
 
-    // const authorized = await user.authenticate(password)
+    const authorized = await user.authenticate(password)
 
-    // if (!authorized) {
-    //   return res.statusUnauthorized("Email ou senha inválidos!")
-    // }
+    if (!authorized) {
+      return res.statusUnauthorized('Email ou senha inválidos!')
+    }
 
-    // const accessToken = user.createToken()
+    if (!user.confirmedEmail) {
+      return res.statusUnauthorized('Email não Confirmado!')
+    }
 
-    // return res.statusOk("Logado com sucesso!", {
-    //   accessToken,
-    //   issuedAt: new Date(),
-    // })
+    const accessToken = user.generateToken()
+
+    return res.statusOk('Logado com sucesso!', {
+      accessToken,
+      issuedAt: new Date(),
+      expiresIn: tokenDuration,
+    })
   }
 }
 
