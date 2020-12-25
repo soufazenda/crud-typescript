@@ -13,6 +13,10 @@ import Address from './Address'
 import Product from './Product'
 import Company from './Company'
 
+import bcrypt from 'bcrypt'
+import jwt from 'jsonwebtoken'
+import { appSecret, tokenDuration } from '@configuration/env'
+
 @Entity('users')
 export default class User extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
@@ -68,15 +72,22 @@ export default class User extends BaseEntity {
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt!: Date
 
-  static async new(user: User) {
-    const u = new User()
-    Object.keys(user).map((key) => {
-      if (user[key]) {
-        u[key] = user[key]
-      }
-    })
+  public async authenticate(password: string): Promise<boolean> {
+    const match = await bcrypt.compare(password, this.password)
+    return match
+  }
 
-    const createdUser = await u.save()
-    return createdUser
+  public generateToken() {
+    return jwt.sign(
+      { userId: this.id, profileType: this.profileType },
+      appSecret,
+      {
+        expiresIn: tokenDuration,
+      }
+    )
+  }
+
+  public get fullName() {
+    return this.firstName + ' ' + this.lastName
   }
 }

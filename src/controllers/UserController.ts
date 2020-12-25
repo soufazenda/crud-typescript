@@ -84,12 +84,24 @@ class UserController {
   }
 
   public async read(req: Request, res: Response) {
-    const seller = await User.findOne({})
-    if (!seller) {
-      return res.statusNotFound('Vendedor não encontrado')
+    const [error, user] = await to(
+      User.findOne({
+        where: { id: req.userId },
+        select: ['firstName', 'lastName', 'email', 'createdAt'],
+      })
+    )
+    if (error) res.statusInternalServerError('Não foi possível buscar usuário!')
+    if (!user) {
+      return res.statusNotFound('Usuário não encontrado')
     }
 
-    return res.json(seller)
+    const userInfo = {
+      name: user.fullName,
+      email: user.email,
+      createdAt: user.createdAt,
+    }
+
+    return res.statusOk('Perfil encontrado com sucesso!', userInfo)
   }
 
   public async confirmEmail(req: Request, res: Response) {
@@ -106,7 +118,6 @@ class UserController {
     if (typeof tokenProps === 'string')
       return res.statusBadRequest('Não foi possível validar token.')
 
-    console.log(Date.now(), (tokenProps as any).exp * 1000)
     if (Date.now() >= (tokenProps as any).exp * 1000) {
       return res.statusUnauthorized('Token Expirada!')
     }
@@ -143,6 +154,38 @@ class UserController {
     if (!user) res.statusNotFound('Usuário não encontrado!')
 
     return res.statusOk('Usuário deletado com sucesso!')
+  }
+
+  public async changeProfileType(req: Request, res: Response) {
+    const { userId, profileType } = req
+    const { type } = req.body
+
+    if (!['common', 'corporate'].includes(type))
+      return res.statusUnprocessableEntity('Tipo de perfil inválido!')
+
+    if (profileType === type)
+      return res.statusUnprocessableEntity(
+        'Não é possível mudar para o mesmo tipo de perfil!'
+      )
+
+    const [findError, user] = await to(User.findOne({ id: userId }))
+
+    if (findError)
+      return res.statusInternalServerError('Não foi possível buscar usuário!')
+
+    if (!user) return res.statusNotFound('Usuário não encontrado!')
+
+    const isCommon = user.profileType === 'common'
+
+    user.profileType = isCommon ? 'corporate' : 'common'
+
+    const [saveError] = await to(user.save())
+
+    if (saveError)
+      return res.statusInternalServerError('Erro ao salvar usuário!')
+    return res.statusOk('Tipo de usuário alterado com sucesso!', {
+      needNewToken: true,
+    })
   }
 }
 

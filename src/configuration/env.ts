@@ -19,6 +19,8 @@ const url = isProduction
   ? String(process.env.URL)
   : `http://${ip.address()}:${port}`
 
+const tokenDuration = '2m'
+
 export {
   env,
   url,
@@ -28,5 +30,6 @@ export {
   appSecret,
   dbPassword,
   emailSecret,
+  tokenDuration,
   connectionString,
 }

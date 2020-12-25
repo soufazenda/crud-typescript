@@ -3,7 +3,6 @@
     "target": "es6",
     "module": "commonjs",
     "outDir": "./build",
-    "rootDir": "./src",
     "strict": true,
     "noImplicitAny": false,
     "esModuleInterop": true,
@@ -20,10 +19,12 @@
     ],
     "baseUrl": ".",
     "paths": {
-      "~/*": ["src/*"],
-      "@models/*": ["src/models/*"],
-      "@controllers/*": ["src/controllers/*"],
-      "@utils/*": ["src/utils/*"]
+      "~/*": ["./src/*"],
+      "@models/*": ["./src/models/*"],
+      "@configuration/*": ["./src/configuration/*"],
+      "@middlewares/*": ["./src/middlewares/*"],
+      "@controllers/*": ["./src/controllers/*"],
+      "@utils/*": ["./src/utils/*"]
     }
    }
 }

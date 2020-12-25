@@ -1,5 +1,6 @@
 import {
   AgeValidator,
+  CPFValidator,
   EmailValidator,
   NameValidator,
   PasswordValidator,
@@ -38,6 +39,7 @@ const validators = {
   ),
   email: new EmailValidator('Insira seu email!', 'Email inválido!'),
   password: new PasswordValidator('Insira sua Senha!', 'Senha inválida!'),
+  cpf: new CPFValidator('Insira seu CPF', 'CPF inválido!'),
 }
 
 export default validate
