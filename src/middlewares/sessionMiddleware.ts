@@ -36,9 +36,9 @@ export function sessionMiddleware(
     if (err instanceof JsonWebTokenError) {
       switch (err.message) {
         case 'jwt expired':
-          return res.statusUnauthorized('Token Expirada!')
+          return res.statusUnauthorized('Token Expirada!', undefined, {headers: {'WWW-Authenticate': 'Bearer realm="User logged area", charset="UTF-8"'}})
         default:
-          return res.statusUnauthorized('Token Inválida!')
+          return res.statusUnauthorized('Token Inválida!', undefined, {headers: {'WWW-Authenticate': 'Bearer realm="User logged area", charset="UTF-8"'}})
       }
     }
   }
