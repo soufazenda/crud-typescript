@@ -58,81 +58,67 @@ const httpStatusCodes = {
   511: 'NetworkAuthenticationRequired',
 }
 
+export interface Options {
+  headers: {[key: string]: any}
+}
+
 declare global {
   namespace Express {
     interface Response {
-      statusAccepted: (message: string, content?: object) => void
-      statusBadGateway: (message: string, content?: object) => void
-      statusBadRequest: (message: string, content?: object) => void
-      statusConflict: (message: string, content?: object) => void
-      statusContinue: (message: string, content?: object) => void
-      statusCreated: (message: string, content?: object) => void
-      statusExpectationFailed: (message: string, content?: object) => void
-      statusFailedDependency: (message: string, content?: object) => void
-      statusForbidden: (message: string, content?: object) => void
-      statusGatewayTimeout: (message: string, content?: object) => void
-      statusGone: (message: string, content?: object) => void
-      statusHttpVersionNotSupported: (message: string, content?: object) => void
-      statusImATeapot: (message: string, content?: object) => void
-      statusInsufficientSpaceOnResource: (
-        message: string,
-        content?: object
-      ) => void
-      statusInsufficientStorage: (message: string, content?: object) => void
-      statusInternalServerError: (message: string, content?: object) => void
-      statusLengthRequired: (message: string, content?: object) => void
-      statusLocked: (message: string, content?: object) => void
-      statusMethodFailure: (message: string, content?: object) => void
-      statusMethodNotAllowed: (message: string, content?: object) => void
-      statusMovedPermanently: (message: string, content?: object) => void
-      statusMovedTemporarily: (message: string, content?: object) => void
-      statusMultiStatus: (message: string, content?: object) => void
-      statusMultipleChoices: (message: string, content?: object) => void
-      statusNetworkAuthenticationRequired: (
-        message: string,
-        content?: object
-      ) => void
-      statusNoContent: (message: string, content?: object) => void
-      statusNonAuthoritativeInformation: (
-        message: string,
-        content?: object
-      ) => void
-      statusNotAcceptable: (message: string, content?: object) => void
-      statusNotFound: (message: string, content?: object) => void
-      statusNotImplemented: (message: string, content?: object) => void
-      statusNotModified: (message: string, content?: object) => void
-      statusOk: (message: string, content?: object) => void
-      statusPartialContent: (message: string, content?: object) => void
-      statusPaymentRequired: (message: string, content?: object) => void
-      statusPermanentRedirect: (message: string, content?: object) => void
-      statusPreconditionFailed: (message: string, content?: object) => void
-      statusPreconditionRequired: (message: string, content?: object) => void
-      statusProcessing: (message: string, content?: object) => void
-      statusProxyAuthenticationRequired: (
-        message: string,
-        content?: object
-      ) => void
-      statusRequestHeaderFieldsTooLarge: (
-        message: string,
-        content?: object
-      ) => void
-      statusRequestTimeout: (message: string, content?: object) => void
-      statusRequestTooLong: (message: string, content?: object) => void
-      statusRequestUriTooLong: (message: string, content?: object) => void
-      statusRequestedRangeNotSatisfiable: (
-        message: string,
-        content?: object
-      ) => void
-      statusResetContent: (message: string, content?: object) => void
-      statusSeeOther: (message: string, content?: object) => void
-      statusServiceUnavailable: (message: string, content?: object) => void
-      statusSwitchingProtocols: (message: string, content?: object) => void
-      statusTemporaryRedirect: (message: string, content?: object) => void
-      statusTooManyRequests: (message: string, content?: object) => void
-      statusUnauthorized: (message: string, content?: object) => void
-      statusUnprocessableEntity: (message: string, content?: object) => void
-      statusUnsupportedMediaType: (message: string, content?: object) => void
-      statusUseProxy: (message: string, content?: object) => void
+      statusAccepted: (message: string, content?: object, options?: Options) => void
+      statusBadGateway: (message: string, content?: object, options?: Options) => void
+      statusBadRequest: (message: string, content?: object, options?: Options) => void
+      statusConflict: (message: string, content?: object, options?: Options) => void
+      statusContinue: (message: string, content?: object, options?: Options) => void
+      statusCreated: (message: string, content?: object, options?: Options) => void
+      statusExpectationFailed: (message: string, content?: object, options?: Options) => void
+      statusFailedDependency: (message: string, content?: object, options?: Options) => void
+      statusForbidden: (message: string, content?: object, options?: Options) => void
+      statusGatewayTimeout: (message: string, content?: object, options?: Options) => void
+      statusGone: (message: string, content?: object, options?: Options) => void
+      statusHttpVersionNotSupported: (message: string, content?: object, options?: Options) => void
+      statusImATeapot: (message: string, content?: object, options?: Options) => void
+      statusInsufficientSpaceOnResource: (message: string, content?: object, options?: Options) => void
+      statusInsufficientStorage: (message: string, content?: object, options?: Options) => void
+      statusInternalServerError: (message: string, content?: object, options?: Options) => void
+      statusLengthRequired: (message: string, content?: object, options?: Options) => void
+      statusLocked: (message: string, content?: object, options?: Options) => void
+      statusMethodFailure: (message: string, content?: object, options?: Options) => void
+      statusMethodNotAllowed: (message: string, content?: object, options?: Options) => void
+      statusMovedPermanently: (message: string, content?: object, options?: Options) => void
+      statusMovedTemporarily: (message: string, content?: object, options?: Options) => void
+      statusMultiStatus: (message: string, content?: object, options?: Options) => void
+      statusMultipleChoices: (message: string, content?: object, options?: Options) => void
+      statusNetworkAuthenticationRequired: (message: string, content?: object, options?: Options) => void
+      statusNoContent: (message: string, content?: object, options?: Options) => void
+      statusNonAuthoritativeInformation: (message: string, content?: object, options?: Options) => void
+      statusNotAcceptable: (message: string, content?: object, options?: Options) => void
+      statusNotFound: (message: string, content?: object, options?: Options) => void
+      statusNotImplemented: (message: string, content?: object, options?: Options) => void
+      statusNotModified: (message: string, content?: object, options?: Options) => void
+      statusOk: (message: string, content?: object, options?: Options) => void
+      statusPartialContent: (message: string, content?: object, options?: Options) => void
+      statusPaymentRequired: (message: string, content?: object, options?: Options) => void
+      statusPermanentRedirect: (message: string, content?: object, options?: Options) => void
+      statusPreconditionFailed: (message: string, content?: object, options?: Options) => void
+      statusPreconditionRequired: (message: string, content?: object, options?: Options) => void
+      statusProcessing: (message: string, content?: object, options?: Options) => void
+      statusProxyAuthenticationRequired: (message: string, content?: object, options?: Options) => void
+      statusRequestHeaderFieldsTooLarge: (message: string, content?: object, options?: Options) => void
+      statusRequestTimeout: (message: string, content?: object, options?: Options) => void
+      statusRequestTooLong: (message: string, content?: object, options?: Options) => void
+      statusRequestUriTooLong: (message: string, content?: object, options?: Options) => void
+      statusRequestedRangeNotSatisfiable: (message: string, content?: object, options?: Options) => void
+      statusResetContent: (message: string, content?: object, options?: Options) => void
+      statusSeeOther: (message: string, content?: object, options?: Options) => void
+      statusServiceUnavailable: (message: string, content?: object, options?: Options) => void
+      statusSwitchingProtocols: (message: string, content?: object, options?: Options) => void
+      statusTemporaryRedirect: (message: string, content?: object, options?: Options) => void
+      statusTooManyRequests: (message: string, content?: object, options?: Options) => void
+      statusUnauthorized: (message: string, content?: object, options?: Options) => void
+      statusUnprocessableEntity: (message: string, content?: object, options?: Options) => void
+      statusUnsupportedMediaType: (message: string, content?: object, options?: Options) => void
+      statusUseProxy: (message: string, content?: object, options?: Options) => void
     }
     export interface Request {
       userId: string
@@ -145,12 +131,23 @@ const hasAnyKey = (obj: object) => Object.keys(obj).length !== 0
 const easyResponse = (req: Request, res: Response, next: NextFunction) => {
   for (const [code, status] of Object.entries(httpStatusCodes)) {
     const success = ['1', '2'].includes(String(code).charAt(0))
-    ;(res as any)['status' + status] = function (
+
+    
+    ;(res as Response)['status' + status] = function (
       message: string,
-      content?: object
-    ) {
+      content?: object,
+      options?: Options
+      ) {
+
+      const headers = options?.headers
       const hasContent = content && hasAnyKey(content)
-      this.status(code).json({
+      if(headers && hasAnyKey(headers)){
+        const headersList = Object.keys(headers)
+        headersList.forEach( key => this.set(key, headers[key]))
+      }
+
+      
+      this.status(Number(code)).json({
         success,
         message,
         data: hasContent && success ? content : undefined,
