@@ -1,14 +1,12 @@
 import { Request, Response } from 'express'
 import Product from '../models/Product'
-import { isValidObjectId } from 'mongoose'
 import to from 'await-to-js'
-const ObjectId = require('mongoose').Types.ObjectId
 
 class ProductController {
   public async list(req: Request, res: Response) {
     const { seller } = req.body
 
-    const [err, products] = await to(Product.find({ seller }).exec())
+    const [err, products] = await to(Product.find({ seller }))
 
     if (err) res.statusInternalServerError('Não foi possível buscar Produtos')
 
@@ -29,7 +27,7 @@ class ProductController {
     }
 
     const [createError, product] = await to(
-      Product.create(title, description, location, galery)
+      Product.insert({title, description})
     )
 
     if (createError || !product)
@@ -40,7 +38,7 @@ class ProductController {
 
   public async read(req: Request, res: Response) {
     const { productId } = req.body
-    const [findError, product] = await to(Product.findById(productId).exec())
+    const [findError, product] = await to(Product.findByIds(productId))
     if (findError)
       return res.statusInternalServerError('Erro ao procurar produto!')
     if (findError || !product) {
@@ -61,7 +59,7 @@ class ProductController {
     const product = { title, description, location, galery }
 
     const [updateError, updatedProduct] = await to(
-      Product.findOneAndUpdate(productId, product).exec()
+      Product.update({id: productId}, product)
     )
 
     if (updateError || !updatedProduct)
@@ -69,14 +67,14 @@ class ProductController {
         'Não foi possível atualizar o produto'
       )
 
-    return res.statusOk('Produto editado com sucesso!', updatedProduct)
+    return res.statusOk('Produto editado com sucesso!', {updatedProduct})
   }
 
   public async delete(req: Request, res: Response) {
     const { productId } = req.body
 
-    const [findError, product] = await to(Product.findById(productId).exec())
-    if (findError || !product?.$isDeleted)
+    const [findError, product] = await to(Product.findByIds(productId))
+    if (findError)
       res.statusInternalServerError('Erro ao procurar produto!')
     if (!product) res.statusNotFound('Produto não encontrado!')
 
