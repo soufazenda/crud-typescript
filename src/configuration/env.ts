@@ -3,10 +3,13 @@ import dotenv from 'dotenv'
 
 const env = process.env.NODE_ENV
 const isProduction = env === 'production'
+const isLocal = env === 'local'
 
-dotenv.config({
-  path: env === '' ? '.env' : `.env.${env}`,
-})
+if(isLocal){
+  dotenv.config({
+    path: env === '' ? '.env' : `.env.${env}`,
+  })
+}
 
 const dbUser = String(process.env.DB_USER)
 const dbName = String(process.env.DB_NAME)

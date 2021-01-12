@@ -9,7 +9,7 @@
     "server": "tsnd -r tsconfig-paths/register --transpile-only --no-notify src/Server.ts",
     "build": "sucrase ./src -d ./dist --transforms typescript,imports",
     "typeorm": "node --require ts-node/register ./node_modules/typeorm/cli.js",
-    "start": "ts-node src/index.ts",
+    "start": "ts-node -r tsconfig-paths/register src/index.ts",
     "test": "jest"
   },
   "devDependencies": {
