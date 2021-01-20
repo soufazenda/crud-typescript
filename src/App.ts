@@ -2,7 +2,7 @@ import './bootstrap'
 import express from 'express'
 import cors from 'cors'
 import morgan from 'morgan'
-import routes from './routes'
+import router from './router'
 import { connectionString, dbName } from './configuration/env'
 import easyResponse from './utils/simpleResponse'
 import './database/index'
@@ -34,7 +34,7 @@ class App {
   }
 
   private routes(): void {
-    this.express.use(routes)
+    this.express.use(router)
   }
 }
 

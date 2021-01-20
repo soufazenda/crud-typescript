@@ -2,7 +2,7 @@ import { Router } from 'express'
 import UserController from '@controllers/UserController'
 import { sessionMiddleware } from '@middlewares/sessionMiddleware'
 
-const userRoutes = Router()
+const userRouter = Router()
 
 // TODO: User side..................................................................
 
@@ -11,28 +11,31 @@ const userRoutes = Router()
 // Buscar produtos
 
 // Visualizar perfil de um usuario
-userRoutes.get('/profile', sessionMiddleware, UserController.read)
+userRouter.get('/profile', sessionMiddleware, UserController.read)
 
 // Visualizar perfil de uma empresa
-userRoutes.post('/', UserController.create)
+userRouter.post('/', UserController.create)
 
 /* /confirmation?token=<emailConfirmToken> */
-userRoutes.get('/confirmation', UserController.confirmEmail)
+userRouter.get('/confirmation', UserController.confirmEmail)
+
+/* Atualiza o perfil para corporate ou common */
+userRouter.patch('/profile/type', sessionMiddleware, UserController.changeProfileType)
 
 // Entrar em contato com o vendedor (Email/Telefone) - Bull e nodemailer
 
 // TODO: Company side (On session)..................................................
 
 // Logon - Email de cadastro  com bull e nodemailer
-userRoutes.post('/seller/create', UserController.create)
+userRouter.post('/seller/create', UserController.create)
 
 // Profile
-userRoutes.put('/seller/update', UserController.update)
+userRouter.put('/seller/update', UserController.update)
 
 // Excluir conta
-userRoutes.delete('/seller/delete', UserController.delete)
+userRouter.delete('/seller/delete', UserController.delete)
 
 // Admin Routes
-userRoutes.get('/list', UserController.index)
+userRouter.get('/list', UserController.index)
 
-export default userRoutes
+export default userRouter

@@ -1,12 +1,13 @@
 import { Router } from 'express'
-import userRoutes from './routes/userRoutes'
-import sessionRoutes from './routes/sessionRoutes'
+import {companyRouter, sessionRouter, userRouter} from './routes'
 import ProductController from './controllers/ProductController'
 
 const routes = Router()
 
-routes.use('/users', userRoutes)
-routes.use(sessionRoutes)
+routes.use('/users', userRouter)
+routes.use('/companies', companyRouter)
+routes.use(sessionRouter)
+
 
 routes.get('/product', ProductController.read)
 

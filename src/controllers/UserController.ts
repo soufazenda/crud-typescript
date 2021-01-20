@@ -72,14 +72,12 @@ class UserController {
       })
     )
     if (error || !user) {
-      console.error(error)
       return res.statusInternalServerError('Não foi possível criar usuário!')
     }
 
     const mailer = new Mailer()
 
     mailer.sendEmailConfirmation({ to: email, token, username: firstName })
-    console.log(user)
     return res.statusCreated('Usúario criado com sucesso!', user.identifiers[0])
   }
 
@@ -172,7 +170,7 @@ class UserController {
 
     if (findError)
       return res.statusInternalServerError('Não foi possível buscar usuário!')
-
+    console.log(userId, profileType)
     if (!user) return res.statusNotFound('Usuário não encontrado!')
 
     const isCommon = user.profileType === 'common'

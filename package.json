@@ -5,12 +5,12 @@
   "license": "UNLICENSED",
   "private": true,
   "scripts": {
-    "dev": "nodemon src/Server.ts",
-    "server": "tsnd -r tsconfig-paths/register --transpile-only --no-notify src/Server.ts",
+    "dev": "tsnd -r tsconfig-paths/register --transpile-only --no-notify src/Server.ts",
     "build": "sucrase ./src -d ./dist --transforms typescript,imports",
     "typeorm": "node --require ts-node/register ./node_modules/typeorm/cli.js",
     "start": "tsnd -r tsconfig-paths/register src/Server.ts",
-    "test": "jest"
+    "test": "jest",
+    "test:ci": "jest --noStackTrace --runInBand --coverage"
   },
   "devDependencies": {
     "@types/cors": "^2.8.9",
